@@ -25,7 +25,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool loggedIn = true;
-  String id = '2';
+  String id = '1';
   String type = 'user';
   String api = 'http://192.168.29.13:3000';
 
@@ -64,11 +64,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'LifeLine',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      themeMode: ThemeMode.system,
+      theme: ThemeData.light(),
+      debugShowCheckedModeBanner: false,
       home: loggedIn ? UserScreen(type: type) : DashBoard(),
     );
   }
@@ -103,4 +100,5 @@ class OtherScreens extends StatelessWidget {
     );
   }
 }
+
 
