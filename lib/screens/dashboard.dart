@@ -1,4 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'authpopup.dart';
+import 'map.dart';
 
 class DashBoard extends StatefulWidget {
    const DashBoard({super.key, this.userData});
@@ -10,13 +14,19 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardState extends State<DashBoard> {
-  var  you=true;
 
-  var oth=false;
+  var display=false;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
+    var len=widget.userData.length;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -58,87 +68,107 @@ class _DashBoardState extends State<DashBoard> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  serviceBox(
-                      context,
-                      'l',
-                      const Color(0xFFEF6969),
-                      Icons.emergency_outlined,
-                      const Color(0xFFEE6463),
-                      'Ambulance',
-                      'For Emergency'),
-                  serviceBox(
-                      context,
-                      'r',
-                      const Color(0xFFFFEEE1),
-                      Icons.science_outlined,
-                      const Color(0xFFCB8652),
-                      'Lab Test',
-                      'Sample Collection'),
+                  TextButton(
+                    onPressed: (){
+                      popup(['Yourself','Others'],len);
+                    },
+                    child: serviceBox(
+                        context,
+                        'l',
+                        const Color(0xFFEF6969),
+                        Icons.emergency_outlined,
+                        const Color(0xFFEE6463),
+                        'Ambulance',
+                        'For Emergency'),
+                  ),
+                  TextButton(
+                    onPressed: () {  },
+                    child: serviceBox(
+                        context,
+                        'r',
+                        const Color(0xFF00A3FF),
+                        Icons.handshake_outlined,
+                        const Color(0xFF0070CA),
+                        'Join Us',
+                        'Be Part of Us'),
+                  ),
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  serviceBox(
-                      context,
-                      'l',
-                      const Color(0xFFFFEACE),
-                      Icons.medical_services_outlined,
-                      const Color(0xFFB3827B),
-                      'Find Doctor',
-                      '200+ Doctors'),
-                  serviceBox(
-                      context,
-                      'r',
-                      const Color(0xFFE7F6F6),
-                      Icons.medication_outlined,
-                      const Color(0xFF5FAEAE),
-                      'Medicines',
-                      'Find/Read'),
+                  TextButton(
+                    onPressed: () {  },
+                    child: serviceBox(
+                        context,
+                        'l',
+                        const Color(0xFFFFEACE),
+                        Icons.medical_services_outlined,
+                        const Color(0xFFB3827B),
+                        'Find Doctor',
+                        '200+ Doctors'),
+                  ),
+                  TextButton(
+                    onPressed: () {  },
+                    child: serviceBox(
+                        context,
+                        'r',
+                        const Color(0xFFFFEEE1),
+                        Icons.science_outlined,
+                        const Color(0xFFCB8652),
+                        'Lab Test',
+                        'Sample Collection'),
+                  ),
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  serviceBox(
-                      context,
-                      'l',
-                      const Color(0xFFEDF5EB),
-                      Icons.email_outlined,
-                      const Color(0xFF71A264),
-                      'Message',
-                      'Any Query?'),
-                  serviceBox(
-                      context,
-                      'r',
-                      const Color(0xFF00A3FF),
-                      Icons.handshake_outlined,
-                      const Color(0xFF0070CA),
-                      'Join Us',
-                      'Be Part of Us'),
+                  TextButton(
+                    onPressed: () {  },
+                    child: serviceBox(
+                        context,
+                        'l',
+                        const Color(0xFFEDF5EB),
+                        Icons.email_outlined,
+                        const Color(0xFF71A264),
+                        'Message',
+                        'Any Query?'),
+                  ),
+                  TextButton(
+                    onPressed: () {  },
+                    child: serviceBox(
+                        context,
+                        'r',
+                        const Color(0xFFE7F6F6),
+                        Icons.medication_outlined,
+                        const Color(0xFF5FAEAE),
+                        'Medicines',
+                        'Find/Read'),
+                  ),
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  serviceBox(
-                      context,
-                      'l',
-                      const Color(0xFFB3CFF5),
-                      Icons.help_outline,
-                      const Color(0xFFA5C3D8),
-                      'Help',
-                      'Assistance'),
-                  serviceBox(
-                      context,
-                      'r',
-                      const Color(0xFFC1D1C8),
-                      Icons.feedback_outlined,
-                      const Color(0xFF6F8B8D),
-                      'FeedBack',
-                      'Any Suggestions?'),
-                ],
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //   children: [
+              //     serviceBox(
+              //         context,
+              //         'l',
+              //         const Color(0xFFB3CFF5),
+              //         Icons.help_outline,
+              //         const Color(0xFFA5C3D8),
+              //         'Help',
+              //         'Assistance'),
+              //     serviceBox(
+              //         context,
+              //         'r',
+              //         const Color(0xFFC1D1C8),
+              //         Icons.feedback_outlined,
+              //         const Color(0xFF6F8B8D),
+              //         'FeedBack',
+              //         'Any Suggestions?'),
+              //   ],
+              // ),
             ],
           ),
         ),
@@ -146,63 +176,31 @@ class _DashBoardState extends State<DashBoard> {
     );
   }
 
-  Widget who(data) {
-    return TextButton(
-      onPressed: () {
-        setState(() {
-          you= (!you);
-          oth=(!oth);
-        });
-      },
-      child: SizedBox(
-        height: 110,
-        child: Column(
-          children: [
-            Stack(
-                clipBehavior: Clip.none,
-                alignment: AlignmentDirectional.topEnd,
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                      borderRadius: BorderRadius.circular(100),
-                      color: you?const Color(0xFF6AA3FB):Colors.white,
-                    ),
-                    child:  Icon(Icons.person_outline,
-                        color: you?Colors.white:Colors.black, size: 40),
-                  ),
-                  Positioned(
-                    bottom: 60,
-                    left: 50,
-                    child: you?Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                          color: Colors.orange,
-                          borderRadius: BorderRadius.circular(50)),
-                      child: const Icon(
-                        Icons.done,
-                        color: Colors.black,
-                      ),
-                    ):Container(),
-                  ),
-                ]),
-            Padding(
-              padding: const EdgeInsets.only(top:8.0),
+  authPopup(opt,len){
+    return showDialog(context: context, builder: (context)=>
+        const Stack(
+      alignment: AlignmentDirectional.topEnd,
+        children: [
+          AlertDialog(
+            title: Center(
               child: Text(
-                data,
-                style: const TextStyle(color: Colors.grey),
+                'Enter Your Phone Number',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
+            content: SizedBox(
+              height: 180,
+              child: Column(
+                children: [
+                  AuthPopup(),
 
-  Future authPopup(context) {
+                ],
+              ),
+            ),
+          ),
+        ]));
+  }
+  Future popup(opt,len) {
     return showDialog(
         context: context,
         builder: (context) => Stack(
@@ -219,19 +217,7 @@ class _DashBoardState extends State<DashBoard> {
                   height: 180,
                   child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          who('Yourself'),
-                          Container(
-                            height: 80,
-                            decoration: BoxDecoration(
-                              border: Border.all(),
-                            ),
-                          ),
-                          who('Others'),
-                        ],
-                      ),
+                      PopUpComp(opt:opt),
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(),
@@ -240,14 +226,20 @@ class _DashBoardState extends State<DashBoard> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            TextButton(onPressed: () {}, child: const Text('OK')),
+                            TextButton(onPressed: () {
+                              Navigator.pop(context);
+                              // print(FirebaseAuth.instance.currentUser?.uid);
+                              len<0?authPopup(opt, len):Navigator.push(context, MaterialPageRoute(builder: (context)=> LoadMap()));
+                                // len>0:():();
+                            }, child: const Text('OK')),
                             Container(
                               height: 40,
                               decoration: BoxDecoration(
                                 border: Border.all(),
                               ),
                             ),
-                            TextButton(onPressed: () {}, child: const Text('More')),
+                            TextButton(onPressed: () {
+                              display?popup(['Transfer','Transport'],len):();display=false;}, child: const Text('More')),
                           ],
                         ),
                       ),
@@ -260,6 +252,7 @@ class _DashBoardState extends State<DashBoard> {
                 right: 20,
                 child: TextButton(
                     onPressed: () {
+                      display=true;
                       Navigator.pop(context);
                     },
                     child: const Icon(
@@ -274,56 +267,154 @@ class _DashBoardState extends State<DashBoard> {
   Widget serviceBox(context, side, color, icon, ic, title, sub) {
     return Container(
       alignment: side == 'l' ? Alignment.centerLeft : Alignment.centerRight,
-      child: TextButton(
-        child: Container(
-          width: 150,
-          height: 150,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(20),
-              topRight: const Radius.circular(20),
-              bottomLeft: side == 'l'
-                  ? const Radius.circular(20)
-                  : const Radius.circular(0),
-              bottomRight: side == 'r'
-                  ? const Radius.circular(20)
-                  : const Radius.circular(0),
-            ),
-            color: color,
+      child: Container(
+        width: 150,
+        height: 150,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(20),
+            topRight: const Radius.circular(20),
+            bottomLeft: side == 'l'
+                ? const Radius.circular(20)
+                : const Radius.circular(0),
+            bottomRight: side == 'r'
+                ? const Radius.circular(20)
+                : const Radius.circular(0),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: Colors.white,
-                  ),
-                  child: Icon(
-                    icon,
-                    color: ic,
-                  ),
+          color: color,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  color: Colors.white,
+                ),
+                child: Icon(
+                  icon,
+                  color: ic,
                 ),
               ),
-              Text(
-                title,
-                style: const TextStyle(color: Colors.black, fontSize: 14),
-              ),
-              Text(
-                sub,
-                style: const TextStyle(color: Colors.black, fontSize: 10),
-              ),
-            ],
-          ),
+            ),
+            Text(
+              title,
+              style: const TextStyle(color: Colors.black, fontSize: 14),
+            ),
+            Text(
+              sub,
+              style: const TextStyle(color: Colors.black, fontSize: 10),
+            ),
+          ],
         ),
-        onPressed: () {
-          authPopup(context);
-        },
       ),
     );
   }
 }
+
+class who extends StatefulWidget {
+   who({this.data,this.state,this.city,super.key});
+  final data;
+  var state;
+  var city;
+
+  @override
+  State<who> createState() => _whoState();
+}
+
+class _whoState extends State<who> {
+
+  @override
+  Widget build(BuildContext context) {
+    return
+      SizedBox(
+        height: 110,
+        child: Column(
+          children: [
+            Stack(
+                clipBehavior: Clip.none,
+                alignment: AlignmentDirectional.topEnd,
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(100),
+                      color: widget.state?const Color(0xFF6AA3FB):Colors.white,
+                    ),
+                    child:  Icon(Icons.person_outline,
+                        color: widget.state?Colors.white:Colors.black, size: 40),
+                  ),
+                  Positioned(
+                    bottom: 60,
+                    left: 50,
+                    child: widget.state?Container(
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                          color: Colors.orange,
+                          borderRadius: BorderRadius.circular(50)),
+                      child: const Icon(
+                        Icons.done,
+                        color: Colors.black,
+                      ),
+                    ):Container(),
+                  ),
+                ]),
+            Padding(
+              padding: const EdgeInsets.only(top:8.0),
+              child: Text(
+                widget.data,
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ),
+          ],
+        ),
+      );;
+  }
+}
+
+class PopUpComp extends StatefulWidget {
+  const PopUpComp({this.opt,super.key});
+  final opt;
+
+  @override
+  State<PopUpComp> createState() => _PopUpCompState();
+}
+
+class _PopUpCompState extends State<PopUpComp> {
+  var you=true;
+  var oth=false;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        TextButton(onPressed: () { setState(() {
+          you=(!you);
+          oth=(!oth);
+        }); },
+        child: who(data:widget.opt[0],state: you,city: oth)),
+        Container(
+          height: 80,
+          decoration: BoxDecoration(
+            border: Border.all(),
+          ),
+        ),
+        TextButton(onPressed: () { setState(() {
+          you=(!you);
+          oth=(!oth);
+        }); },
+        child: who(data:widget.opt[1],state: oth,city: oth)),
+      ],
+    );
+  }
+}
+
+
+

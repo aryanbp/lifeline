@@ -24,20 +24,22 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool loggedIn = true;
+  bool loggedIn = false;
   String id = '1';
   String type = 'user';
-  String api = 'http://192.168.29.13:3000';
+  // String api = 'http://192.168.29.13:3000';
+  String api='http://192.168.0.111:3000';
+  var res=[];
 
   Future<void> getUser() async {
     var url = Uri.parse(api);
     var response = await http.get(url);
     if (response.statusCode == 200) {
-      var res = json.decode(response.body);
-      if (kDebugMode) {
-        type = res[0]['user_type'];
-        print(res[0]['user_type']);
-      }
+      res = json.decode(response.body);
+      type = res[0]['user_type'];
+      // if (kDebugMode) {
+      //   print(res[0]);
+      // }
     }
   }
 
@@ -48,6 +50,7 @@ class _MyAppState extends State<MyApp> {
         loggedIn = true;
       } else {
         api += '/$id';
+        loggedIn=true;
         getUser();
       }
     });
@@ -66,18 +69,19 @@ class _MyAppState extends State<MyApp> {
       title: 'LifeLine',
       theme: ThemeData.light(),
       debugShowCheckedModeBanner: false,
-      home: loggedIn ? UserScreen(type: type) : DashBoard(),
+      home: loggedIn ? UserScreen(type: type,res: res) : DashBoard(userData: [],),
     );
   }
 }
 
 class UserScreen extends StatelessWidget {
-  const UserScreen({super.key, required this.type,});
+  const UserScreen({super.key, required this.type, required this.res,});
 
   final String type;
+  final List res;
   @override
   Widget build(BuildContext context) {
-    return type=='user'?DashBoard():const OtherScreens();
+    return type=='user'?DashBoard(userData:res,):const OtherScreens();
   }
 }
 class OtherScreens extends StatelessWidget {
