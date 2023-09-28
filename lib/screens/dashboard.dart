@@ -1,32 +1,35 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
+import '../components/services.dart';
 import 'authpopup.dart';
 import 'map.dart';
 
 class DashBoard extends StatefulWidget {
-   const DashBoard({super.key, this.userData});
+  const DashBoard({super.key, required this.userData});
 
-  final userData;
+  final Map<String, dynamic> userData;
 
   @override
   State<DashBoard> createState() => _DashBoardState();
 }
 
 class _DashBoardState extends State<DashBoard> {
-
-  var display=false;
+  bool display = true;
+  int _index = 0;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-    var len=widget.userData.length;
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      extendBody: true,
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -68,84 +71,64 @@ class _DashBoardState extends State<DashBoard> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  TextButton(
-                    onPressed: (){
-                      popup(['Yourself','Others'],len);
-                    },
-                    child: serviceBox(
-                        context,
-                        'l',
-                        const Color(0xFFEF6969),
-                        Icons.emergency_outlined,
-                        const Color(0xFFEE6463),
-                        'Ambulance',
-                        'For Emergency'),
-                  ),
-                  TextButton(
-                    onPressed: () {  },
-                    child: serviceBox(
-                        context,
-                        'r',
-                        const Color(0xFF00A3FF),
-                        Icons.handshake_outlined,
-                        const Color(0xFF0070CA),
-                        'Join Us',
-                        'Be Part of Us'),
-                  ),
+                  Box(
+                      func: () => popup(['Yourself', 'Others']),
+                      side: 'l',
+                      color: Color(0xFFEF6969),
+                      icon: Icons.emergency_outlined,
+                      ic: Color(0xFFEE6463),
+                      title: 'Ambulance',
+                      sub: 'For Emergency'),
+                  Box(
+                      func: () => (),
+                      side: 'r',
+                      color: const Color(0xFF00A3FF),
+                      icon: Icons.handshake_outlined,
+                      ic: const Color(0xFF0070CA),
+                      title: 'Join Us',
+                      sub: 'Be Part of Us'),
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  TextButton(
-                    onPressed: () {  },
-                    child: serviceBox(
-                        context,
-                        'l',
-                        const Color(0xFFFFEACE),
-                        Icons.medical_services_outlined,
-                        const Color(0xFFB3827B),
-                        'Find Doctor',
-                        '200+ Doctors'),
-                  ),
-                  TextButton(
-                    onPressed: () {  },
-                    child: serviceBox(
-                        context,
-                        'r',
-                        const Color(0xFFFFEEE1),
-                        Icons.science_outlined,
-                        const Color(0xFFCB8652),
-                        'Lab Test',
-                        'Sample Collection'),
-                  ),
+                  Box(
+                      func: () => (),
+                      side: 'l',
+                      color: const Color(0xFFFFEACE),
+                      icon: Icons.medical_services_outlined,
+                      ic: const Color(0xFFB3827B),
+                      title: 'Find Doctor',
+                      sub: '200+ Doctors'),
+                  Box(
+                      func: () => (),
+                      side: 'r',
+                      color: const Color(0xFFFFEEE1),
+                      icon: Icons.science_outlined,
+                      ic: const Color(0xFFCB8652),
+                      title: 'Lab Test',
+                      sub: 'Sample Collection'),
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  TextButton(
-                    onPressed: () {  },
-                    child: serviceBox(
-                        context,
-                        'l',
-                        const Color(0xFFEDF5EB),
-                        Icons.email_outlined,
-                        const Color(0xFF71A264),
-                        'Message',
-                        'Any Query?'),
-                  ),
-                  TextButton(
-                    onPressed: () {  },
-                    child: serviceBox(
-                        context,
-                        'r',
-                        const Color(0xFFE7F6F6),
-                        Icons.medication_outlined,
-                        const Color(0xFF5FAEAE),
-                        'Medicines',
-                        'Find/Read'),
-                  ),
+                  Box(
+                      func: () => (),
+                      side: 'l',
+                      color: const Color(0xFFEDF5EB),
+                      icon: Icons.email_outlined,
+                      ic: const Color(0xFF71A264),
+                      title: 'Message',
+                      sub: 'Any Query?'),
+                  Box(
+                      func: () => (),
+                      side: 'r',
+                      color: const Color(0xFFE7F6F6),
+                      icon: Icons.medication_outlined,
+                      ic: const Color(0xFF5FAEAE),
+                      title: 'Medicines',
+                      sub: 'Find/Read'),
                 ],
               ),
               // Row(
@@ -169,43 +152,58 @@ class _DashBoardState extends State<DashBoard> {
               //         'Any Suggestions?'),
               //   ],
               // ),
+              const SizedBox(
+                height: 90,
+              ),
             ],
           ),
         ),
       ),
+      bottomNavigationBar: FloatingNavbar(
+        onTap: (int val) => setState(() => _index = val),
+        currentIndex: _index,
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.orange,
+        unselectedItemColor: Colors.grey,
+        items: [
+          FloatingNavbarItem(icon: Icons.home, title: 'Home'),
+          FloatingNavbarItem(icon: Icons.explore, title: 'Explore'),
+          FloatingNavbarItem(icon: Icons.chat_bubble_outline, title: 'Chats'),
+          FloatingNavbarItem(icon: Icons.settings, title: 'Settings'),
+        ],
+      ),
     );
   }
 
-  authPopup(opt,len){
-    return showDialog(context: context, builder: (context)=>
-        const Stack(
-      alignment: AlignmentDirectional.topEnd,
-        children: [
-          AlertDialog(
-            title: Center(
-              child: Text(
-                'Enter Your Phone Number',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-              ),
-            ),
-            content: SizedBox(
-              height: 180,
-              child: Column(
-                children: [
-                  AuthPopup(),
-
-                ],
-              ),
-            ),
-          ),
-        ]));
-  }
-  Future popup(opt,len) {
+  authPopup(opt) {
     return showDialog(
         context: context,
-        builder: (context) => Stack(
-          alignment: AlignmentDirectional.topEnd,
-            children: [
+        builder: (context) =>
+            const Stack(alignment: AlignmentDirectional.topEnd, children: [
+              AlertDialog(
+                title: Center(
+                  child: Text(
+                    'Enter Your Phone Number',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                content: SizedBox(
+                  height: 180,
+                  child: Column(
+                    children: [
+                      AuthPopup(),
+                    ],
+                  ),
+                ),
+              ),
+            ]));
+  }
+
+  Future popup(opt) {
+    return showDialog(
+        context: context,
+        builder: (context) =>
+            Stack(alignment: AlignmentDirectional.topEnd, children: [
               AlertDialog(
                 title: const Center(
                   child: Text(
@@ -217,29 +215,53 @@ class _DashBoardState extends State<DashBoard> {
                   height: 180,
                   child: Column(
                     children: [
-                      PopUpComp(opt:opt),
+                      PopUpComp(opt: opt),
                       Container(
                         decoration: BoxDecoration(
-                          border: Border.all(),
-                          borderRadius: BorderRadius.circular(50)
-                        ),
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(50)),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            TextButton(onPressed: () {
-                              Navigator.pop(context);
-                              // print(FirebaseAuth.instance.currentUser?.uid);
-                              len<0?authPopup(opt, len):Navigator.push(context, MaterialPageRoute(builder: (context)=> LoadMap()));
-                                // len>0:():();
-                            }, child: const Text('OK')),
+                            TextButton(
+                                onPressed: () {
+                                  print(FirebaseAuth.instance.currentUser?.uid);
+                                  print(widget.userData);
+                                  // authPopup(opt, len);
+                                  if (FirebaseAuth.instance.currentUser?.uid ==
+                                      null) {
+                                    authPopup(opt);
+                                  } else {
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const LoadMap()));
+                                  }
+                                  // len>0:():();
+                                },
+                                child: const Text('OK')),
                             Container(
                               height: 40,
                               decoration: BoxDecoration(
                                 border: Border.all(),
                               ),
                             ),
-                            TextButton(onPressed: () {
-                              display?popup(['Transfer','Transport'],len):();display=false;}, child: const Text('More')),
+                            TextButton(
+                                onPressed: () {
+                                  if (display) {
+                                    Navigator.pop(context);
+                                    popup(['Transport', 'Mortuary']);
+                                  } else {
+                                    Navigator.pop(context);
+                                    popup(['Yourself', 'Others']);
+                                  }
+                                  display = (!display);
+                                },
+                                child: display
+                                    ? const Text('More')
+                                    : const Text('Back')),
                           ],
                         ),
                       ),
@@ -252,7 +274,7 @@ class _DashBoardState extends State<DashBoard> {
                 right: 20,
                 child: TextButton(
                     onPressed: () {
-                      display=true;
+                      display = true;
                       Navigator.pop(context);
                     },
                     child: const Icon(
@@ -260,127 +282,100 @@ class _DashBoardState extends State<DashBoard> {
                       color: Colors.black,
                       size: 40,
                     )),
+              ),
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.66,
+                right: MediaQuery.of(context).size.width * 0.37,
+                child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      FlutterPhoneDirectCaller.callNumber('9136220207');
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50)),
+                    ),
+                    child: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Text('Call 102'),
+                      ),
+                    )),
               )
             ]));
   }
-
-  Widget serviceBox(context, side, color, icon, ic, title, sub) {
-    return Container(
-      alignment: side == 'l' ? Alignment.centerLeft : Alignment.centerRight,
-      child: Container(
-        width: 150,
-        height: 150,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(20),
-            topRight: const Radius.circular(20),
-            bottomLeft: side == 'l'
-                ? const Radius.circular(20)
-                : const Radius.circular(0),
-            bottomRight: side == 'r'
-                ? const Radius.circular(20)
-                : const Radius.circular(0),
-          ),
-          color: color,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: Colors.white,
-                ),
-                child: Icon(
-                  icon,
-                  color: ic,
-                ),
-              ),
-            ),
-            Text(
-              title,
-              style: const TextStyle(color: Colors.black, fontSize: 14),
-            ),
-            Text(
-              sub,
-              style: const TextStyle(color: Colors.black, fontSize: 10),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
-class who extends StatefulWidget {
-   who({this.data,this.state,this.city,super.key});
+class Who extends StatefulWidget {
+  const Who({this.data, this.state, this.city, super.key});
   final data;
-  var state;
-  var city;
+  final state;
+  final city;
 
   @override
-  State<who> createState() => _whoState();
+  State<Who> createState() => _WhoState();
 }
 
-class _whoState extends State<who> {
-
+class _WhoState extends State<Who> {
   @override
   Widget build(BuildContext context) {
-    return
-      SizedBox(
-        height: 110,
-        child: Column(
-          children: [
-            Stack(
-                clipBehavior: Clip.none,
-                alignment: AlignmentDirectional.topEnd,
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                      borderRadius: BorderRadius.circular(100),
-                      color: widget.state?const Color(0xFF6AA3FB):Colors.white,
-                    ),
-                    child:  Icon(Icons.person_outline,
-                        color: widget.state?Colors.white:Colors.black, size: 40),
+    return SizedBox(
+      height: 110,
+      child: Column(
+        children: [
+          Stack(
+              clipBehavior: Clip.none,
+              alignment: AlignmentDirectional.topEnd,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(100),
+                    color:
+                        widget.state ? const Color(0xFF6AA3FB) : Colors.white,
                   ),
-                  Positioned(
-                    bottom: 60,
-                    left: 50,
-                    child: widget.state?Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                          color: Colors.orange,
-                          borderRadius: BorderRadius.circular(50)),
-                      child: const Icon(
-                        Icons.done,
-                        color: Colors.black,
-                      ),
-                    ):Container(),
-                  ),
-                ]),
-            Padding(
-              padding: const EdgeInsets.only(top:8.0),
-              child: Text(
-                widget.data,
-                style: const TextStyle(color: Colors.grey),
-              ),
+                  child: Icon(Icons.person_outline,
+                      color: widget.state ? Colors.white : Colors.black,
+                      size: 40),
+                ),
+                Positioned(
+                  bottom: 60,
+                  left: 50,
+                  child: widget.state
+                      ? Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                              color: Colors.orange,
+                              borderRadius: BorderRadius.circular(50)),
+                          child: const Icon(
+                            Icons.done,
+                            color: Colors.black,
+                          ),
+                        )
+                      : Container(),
+                ),
+              ]),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              widget.data,
+              style: const TextStyle(color: Colors.grey),
             ),
-          ],
-        ),
-      );;
+          ),
+        ],
+      ),
+    );
+    ;
   }
 }
 
 class PopUpComp extends StatefulWidget {
-  const PopUpComp({this.opt,super.key});
+  const PopUpComp({this.opt, super.key});
   final opt;
 
   @override
@@ -388,33 +383,36 @@ class PopUpComp extends StatefulWidget {
 }
 
 class _PopUpCompState extends State<PopUpComp> {
-  var you=true;
-  var oth=false;
+  var you = true;
+  var oth = false;
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        TextButton(onPressed: () { setState(() {
-          you=(!you);
-          oth=(!oth);
-        }); },
-        child: who(data:widget.opt[0],state: you,city: oth)),
+        TextButton(
+            onPressed: () {
+              setState(() {
+                you = (!you);
+                oth = (!oth);
+              });
+            },
+            child: Who(data: widget.opt[0], state: you, city: oth)),
         Container(
           height: 80,
           decoration: BoxDecoration(
             border: Border.all(),
           ),
         ),
-        TextButton(onPressed: () { setState(() {
-          you=(!you);
-          oth=(!oth);
-        }); },
-        child: who(data:widget.opt[1],state: oth,city: oth)),
+        TextButton(
+            onPressed: () {
+              setState(() {
+                you = (!you);
+                oth = (!oth);
+              });
+            },
+            child: Who(data: widget.opt[1], state: oth, city: oth)),
       ],
     );
   }
 }
-
-
-

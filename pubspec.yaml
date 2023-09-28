@@ -42,6 +42,9 @@ dependencies:
   google_maps_widget: ^1.0.5+1
   geolocator: ^10.1.0
   google_map_polyline_new: ^0.3.0+2
+  fluttertoast: ^8.2.2
+  floating_bottom_navigation_bar: ^1.5.2
+  flutter_phone_direct_caller: ^2.1.1
 
 dev_dependencies:
   flutter_test:
