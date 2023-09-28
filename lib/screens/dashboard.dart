@@ -47,14 +47,16 @@ class _DashBoardState extends State<DashBoard> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Image.asset('assets/images/logo.png', width: 200),
+                    Image.asset('assets/images/logo.png', width: 180),
                     Container(
                       width: 100,
                       height: 100,
+                      clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(100),
                         color: Colors.black,
                       ),
+                      child:Image.asset('assets/images/profile.png'),
                     ),
                   ],
                 ),
@@ -166,10 +168,10 @@ class _DashBoardState extends State<DashBoard> {
         selectedItemColor: Colors.orange,
         unselectedItemColor: Colors.grey,
         items: [
-          FloatingNavbarItem(icon: Icons.home, title: 'Home'),
-          FloatingNavbarItem(icon: Icons.explore, title: 'Explore'),
-          FloatingNavbarItem(icon: Icons.chat_bubble_outline, title: 'Chats'),
-          FloatingNavbarItem(icon: Icons.settings, title: 'Settings'),
+          FloatingNavbarItem(icon: Icons.home_outlined, title: 'Home'),
+          FloatingNavbarItem(icon: Icons.search, title: 'Search'),
+          FloatingNavbarItem(icon: Icons.chat_bubble_outline, title: 'Messages'),
+          FloatingNavbarItem(icon: Icons.person_outline, title: 'Profile'),
         ],
       ),
     );
@@ -333,7 +335,7 @@ class _WhoState extends State<Who> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    border: Border.all(),
+                    border: widget.state?Border.all(color: Colors.transparent):Border.all(),
                     borderRadius: BorderRadius.circular(100),
                     color:
                         widget.state ? const Color(0xFF6AA3FB) : Colors.white,

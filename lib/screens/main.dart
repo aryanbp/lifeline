@@ -5,12 +5,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:http/http.dart' as http;
 import 'package:lifeline/firebase_options.dart';
 import 'package:lifeline/screens/dashboard.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -70,6 +72,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     checkUser();
+    FlutterNativeSplash.remove();
   }
 
   @override
