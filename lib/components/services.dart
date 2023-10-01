@@ -28,6 +28,7 @@ class _BoxState extends State<Box> {
   @override
   Widget build(BuildContext context) {
     return TextButton(
+      style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory,),
       onPressed: widget.func,
       child: ServiceBox(
           side: widget.side,

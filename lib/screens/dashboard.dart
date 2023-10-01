@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:lifeline/screens/profile.dart';
 
 import '../components/services.dart';
 import 'authpopup.dart';
@@ -19,20 +20,162 @@ class DashBoard extends StatefulWidget {
 class _DashBoardState extends State<DashBoard> {
   bool display = true;
   int _index = 0;
+  String name='User';
+
+  void getName(){
+    setState(() {
+      name=FirebaseAuth.instance.currentUser!=null&&widget.userData['user_name']!=null?
+      widget.userData['user_name']:'User';
+    });
+  }
+
+  authPopup(opt) {
+    return showDialog(
+        context: context,
+        builder: (context) =>
+        const Stack(alignment: AlignmentDirectional.topEnd, children: [
+          AlertDialog(
+            title: Center(
+              child: Text(
+                'Enter Your Phone Number',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+            ),
+            content: SizedBox(
+              height: 180,
+              child: Column(
+                children: [
+                  AuthPopup(),
+                ],
+              ),
+            ),
+          ),
+        ]));
+  }
+  Future popup(opt) {
+    return showDialog(
+        context: context,
+        builder: (context) =>
+            Stack(alignment: AlignmentDirectional.topEnd, children: [
+              AlertDialog(
+                title: const Center(
+                  child: Text(
+                    'Calling an Ambulance for?',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                content: SizedBox(
+                  height: 180,
+                  child: Column(
+                    children: [
+                      PopUpComp(opt: opt),
+                      Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(50)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            TextButton(
+                                onPressed: () {
+                                  print(FirebaseAuth.instance.currentUser?.uid);
+                                  print(widget.userData);
+                                  // authPopup(opt, len);
+                                  if (FirebaseAuth.instance.currentUser?.uid ==
+                                      null) {
+                                    authPopup(opt);
+                                  } else {
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                            const LoadMap()));
+                                  }
+                                  // len>0:():();
+                                },
+                                child: const Text('OK')),
+                            Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                border: Border.all(),
+                              ),
+                            ),
+                            TextButton(
+                                style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory,),
+                                onPressed: () {
+                                  if (display) {
+                                    Navigator.pop(context);
+                                    popup(['Transport', 'Mortuary']);
+                                  } else {
+                                    Navigator.pop(context);
+                                    popup(['Yourself', 'Others']);
+                                  }
+                                  display = (!display);
+                                },
+                                child: display
+                                    ? const Text('More')
+                                    : const Text('Back')),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 225,
+                right: 20,
+                child: TextButton(
+                    onPressed: () {
+                      display = true;
+                      Navigator.pop(context);
+                    },
+                    child: const Icon(
+                      Icons.cancel,
+                      color: Colors.black,
+                      size: 40,
+                    )),
+              ),
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.66,
+                right: MediaQuery.of(context).size.width * 0.37,
+                child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      FlutterPhoneDirectCaller.callNumber('9136220207');
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50)),
+                    ),
+                    child: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Text('Call 102'),
+                      ),
+                    )),
+              )
+            ]));
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    print('Dashtboard');
+    getName();
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      body: SingleChildScrollView(
+      body: [SingleChildScrollView(
         child: Center(
-          child: Column(
+          child:
+            Column(
             children: [
               Container(
                 alignment: Alignment.bottomLeft,
@@ -66,7 +209,7 @@ class _DashBoardState extends State<DashBoard> {
                     const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
                 child: Container(
                   alignment: Alignment.centerLeft,
-                  child: const Text('Hello, User!',
+                  child: Text('Hello, $name!',
                       style: TextStyle(fontSize: 26)),
                 ),
               ),
@@ -161,12 +304,21 @@ class _DashBoardState extends State<DashBoard> {
           ),
         ),
       ),
+        Center(child: Container(child: Text('Search Page'),)),
+        Center(child: Container(child: Text('Message page'),)),
+        Profile(userData:widget.userData),
+      ][_index],
+
       bottomNavigationBar: FloatingNavbar(
-        onTap: (int val) => setState(() => _index = val),
+        onTap: (int val) => setState((){
+
+          _index = val;
+        }),
         currentIndex: _index,
         backgroundColor: Colors.white,
         selectedItemColor: Colors.orange,
         unselectedItemColor: Colors.grey,
+
         items: [
           FloatingNavbarItem(icon: Icons.home_outlined, title: 'Home'),
           FloatingNavbarItem(icon: Icons.search, title: 'Search'),
@@ -175,138 +327,6 @@ class _DashBoardState extends State<DashBoard> {
         ],
       ),
     );
-  }
-
-  authPopup(opt) {
-    return showDialog(
-        context: context,
-        builder: (context) =>
-            const Stack(alignment: AlignmentDirectional.topEnd, children: [
-              AlertDialog(
-                title: Center(
-                  child: Text(
-                    'Enter Your Phone Number',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                content: SizedBox(
-                  height: 180,
-                  child: Column(
-                    children: [
-                      AuthPopup(),
-                    ],
-                  ),
-                ),
-              ),
-            ]));
-  }
-
-  Future popup(opt) {
-    return showDialog(
-        context: context,
-        builder: (context) =>
-            Stack(alignment: AlignmentDirectional.topEnd, children: [
-              AlertDialog(
-                title: const Center(
-                  child: Text(
-                    'Calling an Ambulance for?',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                content: SizedBox(
-                  height: 180,
-                  child: Column(
-                    children: [
-                      PopUpComp(opt: opt),
-                      Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(),
-                            borderRadius: BorderRadius.circular(50)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            TextButton(
-                                onPressed: () {
-                                  print(FirebaseAuth.instance.currentUser?.uid);
-                                  print(widget.userData);
-                                  // authPopup(opt, len);
-                                  if (FirebaseAuth.instance.currentUser?.uid ==
-                                      null) {
-                                    authPopup(opt);
-                                  } else {
-                                    Navigator.pop(context);
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const LoadMap()));
-                                  }
-                                  // len>0:():();
-                                },
-                                child: const Text('OK')),
-                            Container(
-                              height: 40,
-                              decoration: BoxDecoration(
-                                border: Border.all(),
-                              ),
-                            ),
-                            TextButton(
-                                onPressed: () {
-                                  if (display) {
-                                    Navigator.pop(context);
-                                    popup(['Transport', 'Mortuary']);
-                                  } else {
-                                    Navigator.pop(context);
-                                    popup(['Yourself', 'Others']);
-                                  }
-                                  display = (!display);
-                                },
-                                child: display
-                                    ? const Text('More')
-                                    : const Text('Back')),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 225,
-                right: 20,
-                child: TextButton(
-                    onPressed: () {
-                      display = true;
-                      Navigator.pop(context);
-                    },
-                    child: const Icon(
-                      Icons.cancel,
-                      color: Colors.black,
-                      size: 40,
-                    )),
-              ),
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.66,
-                right: MediaQuery.of(context).size.width * 0.37,
-                child: TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      FlutterPhoneDirectCaller.callNumber('9136220207');
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.red,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50)),
-                    ),
-                    child: const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Text('Call 102'),
-                      ),
-                    )),
-              )
-            ]));
   }
 }
 
@@ -393,6 +413,7 @@ class _PopUpCompState extends State<PopUpComp> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         TextButton(
+            style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory,),
             onPressed: () {
               setState(() {
                 you = (!you);
@@ -407,6 +428,7 @@ class _PopUpCompState extends State<PopUpComp> {
           ),
         ),
         TextButton(
+            style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory,),
             onPressed: () {
               setState(() {
                 you = (!you);

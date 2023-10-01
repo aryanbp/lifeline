@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
   String id = '1';
   String type = '';
   // String api='http://192.168.64.167:3000';
-  String api = 'http://192.168.29.13:3000';
+  String api = 'http://192.168.29.13:3000/user';
   // String api='http://192.168.0.111:3000';
   // String api='http://192.168.208.167:3000';
   Map<String,dynamic> res={};
@@ -42,6 +42,7 @@ class _MyAppState extends State<MyApp> {
     if (response.statusCode == 200) {
       res = json.decode(response.body)[0];
       type = res['user_type'];
+      setState(() {});
       if (kDebugMode) {
         print('main');
         print(res);
@@ -53,15 +54,9 @@ class _MyAppState extends State<MyApp> {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user != null) {
         // id = user.uid;
-        if (kDebugMode) {
-          print(user.uid);
-        }
         api += '/$id';
         loggedIn = true;
       } else {
-        if (kDebugMode) {
-          print(id);
-        }
         api += '/$id';
       }
         getUser();

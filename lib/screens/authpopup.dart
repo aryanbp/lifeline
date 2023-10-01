@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:lifeline/screens/main.dart';
 import 'package:http/http.dart' as http;
 
 import 'map.dart';
@@ -90,6 +92,7 @@ class _MyAuthPopup extends State<AuthPopup> {
           print(user.uid);
         }
       });
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
       Navigator.pop(context);
       Navigator.pop(context);
       Navigator.push(
@@ -149,6 +152,7 @@ class _MyAuthPopup extends State<AuthPopup> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               TextButton(
+                  style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory,),
                   onPressed: () async {
                     if (clicked) {
                       verification(6,()=>otpAuth());
@@ -164,6 +168,7 @@ class _MyAuthPopup extends State<AuthPopup> {
                 ),
               ),
               TextButton(
+                  style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory,),
                   onPressed: () {
                     Navigator.pop(context);
                   },
