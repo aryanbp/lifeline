@@ -55,14 +55,13 @@ class _MyAuthPopup extends State<AuthPopup> {
       ),
     );
   }
+
   Future<void> phoneAuth() async {
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: '+91${content.text}',
-      verificationCompleted:
-      ((PhoneAuthCredential credential) {}),
+      verificationCompleted: ((PhoneAuthCredential credential) {}),
       verificationFailed: (FirebaseAuthException e) {},
-      codeSent: (String verificationId,
-          int? forceResendingToken) {
+      codeSent: (String verificationId, int? forceResendingToken) {
         verification_Id = verificationId;
       },
       codeAutoRetrievalTimeout: (String verificationId) {},
@@ -72,36 +71,26 @@ class _MyAuthPopup extends State<AuthPopup> {
       content.clear();
     });
   }
+
   Future<void> otpAuth() async {
-    PhoneAuthCredential credential =
-    PhoneAuthProvider.credential(
-        verificationId: verification_Id,
-        smsCode: content.text);
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verification_Id, smsCode: content.text);
     FirebaseAuth.instance.signInWithCredential(credential);
     if (kDebugMode) {
-      print(FirebaseAuth.instance
-          .signInWithCredential(credential));
+      print(FirebaseAuth.instance.signInWithCredential(credential));
     }
     setState(() {
       clicked = false;
       content.clear();
-      FirebaseAuth.instance
-          .authStateChanges()
-          .listen((User? user) {
-        if (user != null) {
-          print(user.uid);
-        }
-      });
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
       Navigator.pop(context);
       Navigator.pop(context);
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => LoadMap()));
+          context, MaterialPageRoute(builder: (context) => LoadMap()));
     });
   }
-  void verification(lim,func){
+
+  void verification(lim, func) {
     if (content.text.length < lim) {
       Fluttertoast.showToast(
           msg: "$lim Numbers Needed",
@@ -111,11 +100,9 @@ class _MyAuthPopup extends State<AuthPopup> {
           backgroundColor: Colors.black,
           textColor: Colors.white,
           fontSize: 16.0);
-    }
-    else if (content.text.contains(new RegExp(r'^[0-9]+$'))) {
+    } else if (content.text.contains(new RegExp(r'^[0-9]+$'))) {
       func();
-    }
-    else {
+    } else {
       Fluttertoast.showToast(
           msg: "Only Numbers Allowed",
           toastLength: Toast.LENGTH_SHORT,
@@ -152,12 +139,14 @@ class _MyAuthPopup extends State<AuthPopup> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               TextButton(
-                  style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory,),
+                  style: TextButton.styleFrom(
+                    splashFactory: NoSplash.splashFactory,
+                  ),
                   onPressed: () async {
                     if (clicked) {
-                      verification(6,()=>otpAuth());
+                      verification(6, () => otpAuth());
                     } else {
-                      verification(10, ()=>phoneAuth());
+                      verification(10, () => phoneAuth());
                     }
                   },
                   child: const Text('Submit')),
@@ -168,9 +157,12 @@ class _MyAuthPopup extends State<AuthPopup> {
                 ),
               ),
               TextButton(
-                  style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory,),
+                  style: TextButton.styleFrom(
+                    splashFactory: NoSplash.splashFactory,
+                  ),
                   onPressed: () {
                     Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp()));
                   },
                   child: const Text('Cancel')),
             ],

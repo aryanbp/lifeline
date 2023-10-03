@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_widget/google_maps_widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:lifeline/screens/AmbulanceBooked.dart';
 import 'package:lifeline/screens/main.dart';
 
 class LoadMap extends StatefulWidget {
@@ -21,27 +22,27 @@ class LoadMap extends StatefulWidget {
 
 class _MyLoadMapState extends State<LoadMap> {
   final Completer<GoogleMapController> _mapcontroller = Completer();
-
-  // String api='http://192.168.64.167:3000';
-  String api = 'http://192.168.29.13:3000/service/hospitals';
+  // String api = 'http://192.168.3.167:3000/service/hospitals';
+  // String api1 = 'http://192.168.3.167:3000/ambubook';
   // String api='http://192.168.0.111:3000';
   // String api='http://192.168.208.167:3000';
+  String api = 'http://192.168.29.13:3000/service/hospitals';
+  String api1 = 'http://192.168.29.13:3000/bookAmbu';
 
   late final List hospitals;
   Position? position;
   final List<Marker> _marker = [];
 
   bool tap = false;
+  var hosp_id = null;
   List<String> display_list = [];
   List<Marker> branch = [];
-  double lat = 19.149717;
-  double log = 72.8350457;
 
   TextEditingController search_item = TextEditingController();
   TextEditingController your_location = TextEditingController();
 
   static CameraPosition _center =
-      CameraPosition(target: LatLng(19.093914, 72.846541), zoom: 15);
+      CameraPosition(target: LatLng(19.093914, 72.846541), zoom: 13);
 
   Future<void> getHospitals() async {
     var url = Uri.parse(api);
@@ -49,8 +50,11 @@ class _MyLoadMapState extends State<LoadMap> {
     if (response.statusCode == 200) {
       hospitals = json.decode(response.body);
       for (Map hosp in hospitals) {
-        createMarker(hosp['hospital_name'], hosp['hospital_address'],
-            LatLng(hosp['hospital_lat'], hosp['hospital_log']));
+        createMarker(
+            hosp['hospital_id'].toString(),
+            hosp['hospital_name'],
+            hosp['hospital_address'],
+            LatLng(hosp['hospital_lat'], hosp['hospital_log']),'');
       }
       setState(() {
         display_list = hospitals
@@ -61,22 +65,28 @@ class _MyLoadMapState extends State<LoadMap> {
     }
   }
 
-  void createMarker(title, address, position) {
+  void createMarker(id, title, address, position,state) {
     branch.add(Marker(
-      draggable: title == 'You' ? true:false,
-      onDrag: (position)=>{
-      setState(() {
-      _marker.removeLast();
-      branch.removeLast();
-      addressFromLocation(position);
-      })
+      draggable: title == 'You' ? true : false,
+      onDrag: (argument) => {
+        setState(() {
+          _marker.removeLast();
+          branch.removeLast();
+          position.longitude = argument.longitude;
+          position.latitude = argument.latitude;
+          addressFromLocation();
+        })
       },
-      markerId: MarkerId('${branch.length + 1}'),
+      markerId: MarkerId(id),
       position: LatLng(position.latitude, position.longitude),
       infoWindow: InfoWindow(
-          title: title,
-          snippet: address,
-          onTap: () => title == 'You' ? '' : search_item.text = title),
+        title: title,
+        snippet: address,
+        onTap: () {
+          title == 'You' ? '' : search_item.text = title;
+          hosp_id = id;
+        },
+      ),
       icon: title == 'You'
           ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure)
           : BitmapDescriptor.defaultMarker,
@@ -123,24 +133,29 @@ class _MyLoadMapState extends State<LoadMap> {
     return true;
   }
 
-
-  void addressFromLocation(position) {
-    placemarkFromCoordinates(position.latitude, position.longitude)
+  void addressFromLocation() {
+    placemarkFromCoordinates(position!.latitude, position!.longitude)
         .then((placemarks) {
       setState(() {
         if (placemarks.isNotEmpty) {
           _center = CameraPosition(
-              target: LatLng(position.latitude, position.longitude), zoom: 14);
+              target: LatLng(position!.latitude, position!.longitude),
+              zoom: 14);
           Placemark info = placemarks[1];
           your_location.text = placemarks[0].name.toString() +
               ', ' +
               info.name.toString() +
+              ',' +
               info.street.toString() +
+              ',' +
               info.thoroughfare.toString() +
+              ',' +
               info.subLocality.toString() +
+              ',' +
               info.locality.toString() +
+              ',' +
               info.postalCode.toString();
-          createMarker('You', your_location.text, position);
+          createMarker('0', 'You', your_location.text, position,'');
         } else {
           print('No results found.');
         }
@@ -152,14 +167,25 @@ class _MyLoadMapState extends State<LoadMap> {
   void getLocation() async {
     position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.bestForNavigation);
-    addressFromLocation(position);
+    addressFromLocation();
   }
 
-  void changeLocation(argument){
+  void changeLocation(argument) {
     setState(() {
       _marker.removeLast();
       branch.removeLast();
-      addressFromLocation(argument);
+      position = Position(
+          longitude: argument.longitude,
+          latitude: argument.latitude,
+          timestamp: DateTime.now(),
+          accuracy: 0.0,
+          altitude: 0.0,
+          altitudeAccuracy: 0.0,
+          heading: 0.0,
+          headingAccuracy: 0.0,
+          speed: 0.0,
+          speedAccuracy: 0.0);
+      addressFromLocation();
       print(_marker[0].position == argument);
     });
   }
@@ -215,8 +241,8 @@ class _MyLoadMapState extends State<LoadMap> {
                   margin: EdgeInsets.only(top: 80),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.3),
-                      border: Border.all(),
-                      borderRadius: BorderRadius.circular(25),
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(25),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -224,7 +250,10 @@ class _MyLoadMapState extends State<LoadMap> {
                       Row(
                         children: [
                           IconButton(
-                              icon: Icon(Icons.location_searching,color: Colors.white,),
+                              icon: Icon(
+                                Icons.location_searching,
+                                color: Colors.white,
+                              ),
                               onPressed: () {
                                 setState(() {
                                   _marker.removeLast();
@@ -242,7 +271,8 @@ class _MyLoadMapState extends State<LoadMap> {
                                 fillColor: Colors.white,
                                 hintText: 'Your Location',
                                 hintStyle: TextStyle(color: Colors.grey),
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10)),
                                 contentPadding: EdgeInsets.only(left: 15),
                                 // counterText: '',
                                 suffix: IconButton(
@@ -278,7 +308,11 @@ class _MyLoadMapState extends State<LoadMap> {
                       Row(
                         children: [
                           IconButton(
-                              icon: Icon(Icons.location_on_outlined,color: Colors.white,size: 25,),
+                              icon: Icon(
+                                Icons.location_on_outlined,
+                                color: Colors.white,
+                                size: 25,
+                              ),
                               onPressed: () {},
                               padding: EdgeInsets.zero),
                           SizedBox(
@@ -370,13 +404,37 @@ class _MyLoadMapState extends State<LoadMap> {
                         borderRadius: BorderRadius.circular(50),
                         border: Border.all()),
                     child: TextButton(
-                      onPressed: () {
-                        if(your_location.text.length>10) {
-                          Navigator.pop(context);
-                        }
-                        else{
+                      onPressed: () async {
+                        if (your_location.text.length > 10) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AmbuBookPage(
+                                      hospital: search_item.text,
+                                      hospital_id: hosp_id,
+                                      latlng: LatLng(position!.latitude,
+                                          position!.longitude),
+                                      address: your_location.text)));
+                          print(
+                              '${hosp_id},${position?.latitude},${position?.longitude},${your_location.text},${search_item.text}');
+                          var url1 = Uri.parse(api1);
+                          var res = await http.post(url1,headers: {
+                            'Content-Type':'application/json'
+                          },
+                            body:jsonEncode({
+                            'userId':1,
+                              'hospitalId': '$hosp_id',
+                              'lat':'${position!.latitude}',
+                              'lng':'${position!.longitude}',
+
+                            })
+                          ).then((value) => {
+                                print('Done')
+                          });
+
+                        } else {
                           Fluttertoast.showToast(
-                              msg: "Address Needed",
+                              msg: "Proper Address Needed",
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.TOP,
                               timeInSecForIosWeb: 1,
@@ -398,7 +456,8 @@ class _MyLoadMapState extends State<LoadMap> {
                       setState(() {
                         Navigator.pop(context);
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp()));
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => MyApp()));
                       });
                     },
                   ),

@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
   bool loggedIn = false;
   String id = '1';
   String type = '';
-  // String api='http://192.168.64.167:3000';
+  // String api='http://192.168.3.167:3000/user';
   String api = 'http://192.168.29.13:3000/user';
   // String api='http://192.168.0.111:3000';
   // String api='http://192.168.208.167:3000';
@@ -56,10 +56,10 @@ class _MyAppState extends State<MyApp> {
         // id = user.uid;
         api += '/$id';
         loggedIn = true;
+        getUser();
       } else {
         api += '/$id';
       }
-        getUser();
     });
   }
 

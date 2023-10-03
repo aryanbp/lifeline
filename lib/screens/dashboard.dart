@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:lifeline/screens/profile.dart';
+import 'package:http/http.dart' as http;
 
 import '../components/services.dart';
 import 'authpopup.dart';
@@ -18,14 +23,39 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardState extends State<DashBoard> {
+  final storage = FirebaseStorage.instance;
+  String api = 'http://192.168.29.13:3000/bookingCheck/1';
+  String name = 'User';
+  Map<String,dynamic> res={};
   bool display = true;
+  var imageUrl = null;
   int _index = 0;
-  String name='User';
 
-  void getName(){
+  getPhoto() async {
+    var path = await widget.userData['user_pic'];
+    final Reference ref = await storage.ref().child(path);
+    imageUrl = await ref.getDownloadURL();
+    print(imageUrl);
+    setState(() {});
+  }
+
+  checkBooking() async {
+    var url = Uri.parse(api);
+    var response = await http.get(url);
+    if (response.statusCode == 200) {
+      res = json.decode(response.body)[0];
+      setState(() {
+        print(res.runtimeType);
+        print(res);
+      });
+    }
+  }
+  void getName() {
     setState(() {
-      name=FirebaseAuth.instance.currentUser!=null&&widget.userData['user_name']!=null?
-      widget.userData['user_name']:'User';
+      name = FirebaseAuth.instance.currentUser != null &&
+              widget.userData['user_name'] != null
+          ? widget.userData['user_name']
+          : 'User';
     });
   }
 
@@ -33,25 +63,26 @@ class _DashBoardState extends State<DashBoard> {
     return showDialog(
         context: context,
         builder: (context) =>
-        const Stack(alignment: AlignmentDirectional.topEnd, children: [
-          AlertDialog(
-            title: Center(
-              child: Text(
-                'Enter Your Phone Number',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            const Stack(alignment: AlignmentDirectional.topEnd, children: [
+              AlertDialog(
+                title: Center(
+                  child: Text(
+                    'Enter Your Phone Number',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                content: SizedBox(
+                  height: 180,
+                  child: Column(
+                    children: [
+                      AuthPopup(),
+                    ],
+                  ),
+                ),
               ),
-            ),
-            content: SizedBox(
-              height: 180,
-              child: Column(
-                children: [
-                  AuthPopup(),
-                ],
-              ),
-            ),
-          ),
-        ]));
+            ]));
   }
+
   Future popup(opt) {
     return showDialog(
         context: context,
@@ -90,7 +121,7 @@ class _DashBoardState extends State<DashBoard> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                            const LoadMap()));
+                                                const LoadMap()));
                                   }
                                   // len>0:():();
                                 },
@@ -102,7 +133,9 @@ class _DashBoardState extends State<DashBoard> {
                               ),
                             ),
                             TextButton(
-                                style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory,),
+                                style: TextButton.styleFrom(
+                                  splashFactory: NoSplash.splashFactory,
+                                ),
                                 onPressed: () {
                                   if (display) {
                                     Navigator.pop(context);
@@ -167,40 +200,79 @@ class _DashBoardState extends State<DashBoard> {
     super.initState();
     print('Dashtboard');
     getName();
+    getPhoto();
+    checkBooking();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      body: [SingleChildScrollView(
-        child: Center(
-          child:
-            Column(
+      body: [
+        SingleChildScrollView(
+          child: Column(
             children: [
-              Container(
-                alignment: Alignment.bottomLeft,
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                height: MediaQuery.of(context).size.height * 0.25,
-                decoration: const BoxDecoration(
-                  borderRadius:
-                      BorderRadius.only(bottomLeft: Radius.circular(80)),
-                  color: Color(0xFFEEF1FF),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+              Center(
+                child: Stack(
                   children: [
-                    Image.asset('assets/images/logo.png', width: 180),
                     Container(
-                      width: 100,
-                      height: 100,
-                      clipBehavior: Clip.antiAlias,
+                      alignment: Alignment.bottomLeft,
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      height: MediaQuery.of(context).size.height * 0.25,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: Colors.black,
+                        borderRadius:
+                            BorderRadius.only(bottomLeft: Radius.circular(80)),
+                        color: Color(0xFFEEF1FF),
                       ),
-                      child:Image.asset('assets/images/profile.png'),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Image.asset('assets/images/logo.png', width: 180),
+                          Container(
+                            width: 100,
+                            height: 100,
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              color: Colors.black,
+                            ),
+                            child: imageUrl != null
+                                ? Image.network(
+                                    imageUrl,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.asset('assets/images/profile.png',
+                                    fit: BoxFit.fitWidth),
+                          ),
+                        ],
+                      ),
                     ),
+                    Positioned(
+                      child:
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 30),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                            gradient: LinearGradient(
+                              // transform: GradientRotation(1.5),
+                              colors: res['status']=='pending'?[Colors.red,Colors.blue.shade200]:[Colors.green,Colors.yellow.shade200],
+                            ),
+                        ),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                              splashFactory: NoSplash.splashFactory,
+                          ),
+                          onPressed: (){},
+                          child: Text('Ambulance Status'),
+                        ),
+                      ),
+                    ),
+                    )
                   ],
                 ),
               ),
@@ -209,8 +281,8 @@ class _DashBoardState extends State<DashBoard> {
                     const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
                 child: Container(
                   alignment: Alignment.centerLeft,
-                  child: Text('Hello, $name!',
-                      style: TextStyle(fontSize: 26)),
+                  child:
+                      Text('Hello, $name!', style: TextStyle(fontSize: 26)),
                 ),
               ),
               Row(
@@ -303,26 +375,24 @@ class _DashBoardState extends State<DashBoard> {
             ],
           ),
         ),
-      ),
-        Center(child: Container(child: Text('Search Page'),)),
-        Center(child: Container(child: Text('Message page'),)),
-        Profile(userData:widget.userData),
+        Center(
+            child: Container(
+              child: Text('Message page'),
+            )),
+        Profile(userData: widget.userData),
       ][_index],
-
       bottomNavigationBar: FloatingNavbar(
-        onTap: (int val) => setState((){
-
+        onTap: (int val) => setState(() {
           _index = val;
         }),
         currentIndex: _index,
         backgroundColor: Colors.white,
         selectedItemColor: Colors.orange,
         unselectedItemColor: Colors.grey,
-
         items: [
           FloatingNavbarItem(icon: Icons.home_outlined, title: 'Home'),
-          FloatingNavbarItem(icon: Icons.search, title: 'Search'),
-          FloatingNavbarItem(icon: Icons.chat_bubble_outline, title: 'Messages'),
+          FloatingNavbarItem(
+              icon: Icons.chat_bubble_outline, title: 'Messages'),
           FloatingNavbarItem(icon: Icons.person_outline, title: 'Profile'),
         ],
       ),
@@ -355,7 +425,9 @@ class _WhoState extends State<Who> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    border: widget.state?Border.all(color: Colors.transparent):Border.all(),
+                    border: widget.state
+                        ? Border.all(color: Colors.transparent)
+                        : Border.all(),
                     borderRadius: BorderRadius.circular(100),
                     color:
                         widget.state ? const Color(0xFF6AA3FB) : Colors.white,
@@ -413,7 +485,9 @@ class _PopUpCompState extends State<PopUpComp> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         TextButton(
-            style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory,),
+            style: TextButton.styleFrom(
+              splashFactory: NoSplash.splashFactory,
+            ),
             onPressed: () {
               setState(() {
                 you = (!you);
@@ -428,7 +502,9 @@ class _PopUpCompState extends State<PopUpComp> {
           ),
         ),
         TextButton(
-            style: TextButton.styleFrom(splashFactory: NoSplash.splashFactory,),
+            style: TextButton.styleFrom(
+              splashFactory: NoSplash.splashFactory,
+            ),
             onPressed: () {
               setState(() {
                 you = (!you);
