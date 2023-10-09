@@ -30,10 +30,7 @@ class _MyAppState extends State<MyApp> {
   bool loggedIn = false;
   String id = '1';
   String type = '';
-  // String api='http://192.168.3.167:3000/user';
   String api = 'http://192.168.29.13:3000/user';
-  // String api='http://192.168.0.111:3000';
-  // String api='http://192.168.208.167:3000';
   Map<String,dynamic> res={};
 
   Future<void> getUser() async {
@@ -67,7 +64,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     checkUser();
-    FlutterNativeSplash.remove();
   }
 
   @override

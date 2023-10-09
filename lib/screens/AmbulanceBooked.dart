@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lifeline/screens/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AmbuBookPage extends StatefulWidget {
   const AmbuBookPage(
@@ -30,17 +31,20 @@ class _AmbuBookPageState extends State<AmbuBookPage> {
           children: [
             Text('Ambulance $status',style: TextStyle(fontSize: 18)),
             Text('${widget.hospital}\n'),
-            Text('${widget.address}',textAlign:TextAlign.center,),
+            Text('Your Address: \n${widget.address}',textAlign:TextAlign.center,),
+            SizedBox(height: 20,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(onPressed: (){
+                ElevatedButton(onPressed: () async {
+                  final SharedPreferences prefs = await SharedPreferences.getInstance();
+                  prefs.setBool('booking',true);
                   Navigator.pop(context);
                   Navigator.pop(context);
                   Navigator.pop(context);
                   Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp()));
                 }, child: Text('SKIP')),
-                ElevatedButton(onPressed: (){}, child: Text('FILL DETAIL NOW'))
+                ElevatedButton(onPressed: (){}, child: Text('FILL DETAILS NOW'))
               ],
             ),
           ],

@@ -141,8 +141,8 @@ class _MyLoadMapState extends State<LoadMap> {
           _center = CameraPosition(
               target: LatLng(position!.latitude, position!.longitude),
               zoom: 14);
-          Placemark info = placemarks[1];
-          your_location.text = placemarks[0].name.toString() +
+          Placemark info = placemarks[0];
+          your_location.text = placemarks[2].name.toString() +
               ', ' +
               info.name.toString() +
               ',' +
@@ -229,7 +229,6 @@ class _MyLoadMapState extends State<LoadMap> {
                   myLocationEnabled: true,
                   myLocationButtonEnabled: true,
                   mapToolbarEnabled: true,
-                  trafficEnabled: true,
                   onTap: (argument) => setState(() {
                     changeLocation(argument);
                   }),

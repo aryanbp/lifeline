@@ -98,6 +98,25 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  Widget Button(content,icon,func){
+    return ElevatedButton(
+          onPressed: ()=>func,
+          style: ElevatedButton.styleFrom(
+            splashFactory: NoSplash.splashFactory,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            padding: EdgeInsets.all(16),
+          ),
+          child:Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              icon, // Prefix icon
+              Text(content,style: TextStyle(color:Colors.black,fontSize: 16),),
+              Icon(Icons.arrow_forward_ios_outlined,color:Colors.black,), // Suffix icon
+            ],
+          ) );
+  }
+
   getPhoto() async {
     var path = await widget.userData['user_pic'];
     final Reference ref = await storage.ref().child(path);
@@ -171,8 +190,17 @@ class _ProfileState extends State<Profile> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                loggedIn
-                    ? Row(
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  height: MediaQuery.of(context).size.height*0.4,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFEEF1FF),
+                    borderRadius: BorderRadius.circular(25)
+                  ),
+                  child: Column(
+                    children: [
+                      loggedIn && image!=null
+                          ? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           ElevatedButton(
@@ -238,34 +266,47 @@ class _ProfileState extends State<Profile> {
                           ),
                         ],
                       )
-                    : Container(),
-                ElevatedButton(
-                    clipBehavior: Clip.antiAlias,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      padding: EdgeInsets.only(top: 20),
-                      shape: CircleBorder(),
-                    ),
-                    onPressed: () {
-                      modelBottomCam(context);
-                      setState(() {});
-                    },
-                    child: image == null && imageUrl != null
-                        ? Image.network(
+                          : Container(),
+                      ElevatedButton(
+                          clipBehavior: Clip.antiAlias,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            padding: EdgeInsets.only(top: 20),
+                            shape: CircleBorder(),
+                          ),
+                          onPressed: () {
+                            modelBottomCam(context);
+                            setState(() {});
+                          },
+                          child: image == null && imageUrl != null
+                              ? Image.network(
                             imageUrl,
                             width: MediaQuery.of(context).size.width * .5,
                             height: 200,
                             fit: BoxFit.cover,
                           )
-                        : image != null
-                            ? Image.file(
-                                //to show image, you type like this.
-                                File(image!.path),
-                                fit: BoxFit.cover,
-                                width: MediaQuery.of(context).size.width * .5,
-                                height: 200,
-                              )
-                            : Image.asset('assets/images/profile.png')),
+                              : image != null
+                              ? Image.file(
+                            //to show image, you type like this.
+                            File(image!.path),
+                            fit: BoxFit.cover,
+                            width: MediaQuery.of(context).size.width * .5,
+                            height: 200,
+                          )
+                              :Icon(Icons.person,size:MediaQuery.of(context).size.width * .5 ,color:Colors.black)),
+                      Text('${widget.userData['user_name']??'User'}',style: TextStyle(fontSize: 25)),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20,),
+                loggedIn?Column(
+                  children: [
+                    Button('Edit Profile',Icon(Icons.person,color:Colors.black,),()),
+                    Button('Add Family Member',Icon(Icons.family_restroom,color:Colors.black,),()),
+                    Button('Previous Bookings',Icon(Icons.medical_services_outlined,color:Colors.black,),()),
+                    Button('Previous Appointments',Icon(Icons.paste,color:Colors.black,),()),
+                  ],
+                ):Container(),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -304,7 +345,7 @@ class _ProfileState extends State<Profile> {
                     },
                     child: Text(
                       loggedIn ? 'LogOut' : 'LogIn',
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(color: Colors.lightBlue),
                     ))
               ],
             ),
