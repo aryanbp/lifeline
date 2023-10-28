@@ -10,7 +10,8 @@ import 'package:http/http.dart' as http;
 import 'map.dart';
 
 class AuthPopup extends StatefulWidget {
-  const AuthPopup({super.key});
+  final bool loggin;
+  const AuthPopup({super.key, required this.loggin});
 
   @override
   State<AuthPopup> createState() => _MyAuthPopup();
@@ -86,7 +87,7 @@ class _MyAuthPopup extends State<AuthPopup> {
       Navigator.pop(context);
       Navigator.pop(context);
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => LoadMap()));
+          context, MaterialPageRoute(builder: (context) => widget.loggin?MyApp():LoadMap()));
     });
   }
 

@@ -7,11 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as maps;
 import 'package:google_maps_widget/google_maps_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:lifeline/screens/AmbulanceBooked.dart';
 import 'package:lifeline/screens/main.dart';
+import 'package:lottie/lottie.dart';
 
 class LoadMap extends StatefulWidget {
   const LoadMap({super.key});
@@ -31,12 +32,12 @@ class _MyLoadMapState extends State<LoadMap> {
 
   late final List hospitals;
   Position? position;
-  final List<Marker> _marker = [];
+  final List<maps.Marker> _marker = [];
 
   bool tap = false;
   var hosp_id = null;
   List<String> display_list = [];
-  List<Marker> branch = [];
+  List<maps.Marker> branch = [];
 
   TextEditingController search_item = TextEditingController();
   TextEditingController your_location = TextEditingController();
@@ -66,7 +67,7 @@ class _MyLoadMapState extends State<LoadMap> {
   }
 
   void createMarker(id, title, address, position,state) {
-    branch.add(Marker(
+    branch.add(maps.Marker(
       draggable: title == 'You' ? true : false,
       onDrag: (argument) => {
         setState(() {
@@ -216,13 +217,13 @@ class _MyLoadMapState extends State<LoadMap> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: branch.length < 0
-          ? CircularProgressIndicator()
+      body: your_location.text.isEmpty
+          ? Center(child: Lottie.network('https://lottie.host/732e8f54-6867-4b44-978a-0bd120fc9a74/d7bcMl3wRo.json'))
           : Stack(
               alignment: AlignmentDirectional.topCenter,
               children: [
                 GoogleMap(
-                  markers: Set<Marker>.of(_marker),
+                  markers: Set<maps.Marker>.of(_marker),
                   onMapCreated: (GoogleMapController controller) {
                     _mapcontroller.complete(controller);
                   },
@@ -335,60 +336,7 @@ class _MyLoadMapState extends State<LoadMap> {
                                 controller: search_item),
                           )
                         ],
-                      ),
-                      // CustomDropdown.search(
-                      //   hintText: 'Search Hospital',
-                      //     excludeSelected: true,
-                      //     fieldSuffixIcon: IconButton(icon: Icon(Icons.cancel,color: Colors.black,size: 30), onPressed: () { search_item.clear(); },),
-                      //
-                      //     items: display_list.length>0?display_list:['Not Available'],
-                      //     controller: search_item)
-                      // TextField(
-                      //   onChanged: (value) {
-                      //     tap = true;
-                      //     updateList(value);
-                      //   },
-                      //   controller: search_item,
-                      //   decoration: InputDecoration(
-                      //     filled: true,
-                      //     fillColor: Color(0xFFF4F5F9),
-                      //     border: OutlineInputBorder(
-                      //       borderRadius: BorderRadius.circular(16),
-                      //       // borderSide: BorderSide.none,
-                      //     ),
-                      //     hintText: 'Search Hospital',
-                      //     suffixIcon: Icon(Icons.search),
-                      //   ),
-                      // ),
-                      // tap
-                      //     ? Expanded(
-                      //         child: display_list.length == 0
-                      //             ? Center(
-                      //                 child: Text('No result Found',
-                      //                     style: TextStyle(
-                      //                         color: Colors.black,
-                      //                         fontWeight: FontWeight.bold)),
-                      //               )
-                      //             : ListView.builder(
-                      //                 itemCount: display_list.length,
-                      //                 itemBuilder: (context, index) =>
-                      //                     ListTile(
-                      //                       onTap: (){
-                      //                         search_item.text=display_list[index]['hospital_name'];
-                      //                         setState(() {
-                      //                           tap=false;
-                      //                         });
-                      //                         },
-                      //                   title: Text(
-                      //                     display_list[index]
-                      //                         ['hospital_name'],
-                      //                     style:
-                      //                         TextStyle(color: Colors.black),
-                      //                   ),
-                      //                 ),
-                      //               ),
-                      //       )
-                      //     : Container(),
+                      )
                     ],
                   ),
                 ),

@@ -9,6 +9,9 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:http/http.dart' as http;
 import 'package:lifeline/firebase_options.dart';
 import 'package:lifeline/screens/dashboard.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'OtherScreens.dart';
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -27,8 +30,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  SharedPreferences? prefs;
   bool loggedIn = false;
-  String id = '1';
+  String id = '2';
   String type = '';
   String api = 'http://192.168.29.13:3000/user';
   Map<String,dynamic> res={};
@@ -47,7 +51,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void checkUser() {
+  Future<void> checkUser() async {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user != null) {
         // id = user.uid;
@@ -57,6 +61,9 @@ class _MyAppState extends State<MyApp> {
       } else {
         api += '/$id';
       }
+      setState(() {
+        FlutterNativeSplash.remove();
+      });
     });
   }
 
@@ -84,44 +91,7 @@ class UserScreen extends StatelessWidget {
   final Map<String,dynamic> res;
   @override
   Widget build(BuildContext context) {
-    return type!=''?(type=='user'?DashBoard(userData:res,):const OtherScreens()):const MyApp();
-  }
-}
-class OtherScreens extends StatefulWidget {
-  const OtherScreens({super.key});
-
-  @override
-  State<OtherScreens> createState() => _OtherScreensState();
-}
-
-class _OtherScreensState extends State<OtherScreens> {
-  int _index=0;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Other Screens'),
-      ),
-      extendBody: true,
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            // Navigate to the second screen when tapped.
-          },
-          child:  Text('$_index screen'),
-        ),
-      ),
-      bottomNavigationBar: FloatingNavbar(
-        onTap: (int val) => setState(() => _index = val),
-        currentIndex: _index,
-        items: [
-          FloatingNavbarItem(icon: Icons.home, title: 'Home'),
-          FloatingNavbarItem(icon: Icons.explore, title: 'Explore'),
-          FloatingNavbarItem(icon: Icons.chat_bubble_outline, title: 'Chats'),
-          FloatingNavbarItem(icon: Icons.settings, title: 'Settings'),
-        ],
-      ),
-    );
+    return type!=''?(type=='user'?DashBoard(userData:res,):OtherScreens(data:res)):const MyApp();
   }
 }
 
