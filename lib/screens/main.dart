@@ -1,8 +1,6 @@
 import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -10,9 +8,12 @@ import 'package:http/http.dart' as http;
 import 'package:lifeline/firebase_options.dart';
 import 'package:lifeline/screens/dashboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'OtherScreens.dart';
 
+//Fix Appointment Page and Add Cancellation of Appointment
+//Fix api structure and app structure
+//Make Proper Search Page in which you can book and check details about it
+//Make other user pages functional
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -30,12 +31,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  SharedPreferences? prefs;
+  bool _isVisible = false;
   bool loggedIn = false;
-  String id = '2';
   String type = '';
+  Map<String, dynamic> res = {};
+  late SharedPreferences prefs;
+  String? id = '1';
   String api = 'http://192.168.29.13:3000/user';
-  Map<String,dynamic> res={};
 
   Future<void> getUser() async {
     var url = Uri.parse(api);
@@ -52,13 +54,16 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> checkUser() async {
+    prefs= await SharedPreferences.getInstance();
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user != null) {
         // id = user.uid;
         api += '/$id';
+        prefs.setInt('id', int.parse(id!));
         loggedIn = true;
         getUser();
       } else {
+        prefs.setString('id', '$id');
         api += '/$id';
       }
       setState(() {
@@ -70,6 +75,11 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    Future.delayed(Duration(milliseconds: 200), () {
+      setState(() {
+        _isVisible = true;
+      });
+    });
     checkUser();
   }
 
@@ -79,20 +89,36 @@ class _MyAppState extends State<MyApp> {
       title: 'LifeLine',
       theme: ThemeData.light(),
       debugShowCheckedModeBanner: false,
-      home: loggedIn ? UserScreen(type: type,res: res) : DashBoard(userData:res,),
+      home: AnimatedOpacity(
+          opacity: _isVisible ? 1.0 : 0.0,
+          duration: Duration(seconds: 1),
+          curve: Curves.easeInOut,
+          child: loggedIn
+              ? UserScreen(type: type, res: res)
+              : DashBoard(
+                  userData: res,
+                )),
     );
   }
 }
 
 class UserScreen extends StatelessWidget {
-  const UserScreen({super.key, required this.type, required this.res,});
+  const UserScreen({
+    super.key,
+    required this.type,
+    required this.res,
+  });
 
   final String type;
-  final Map<String,dynamic> res;
+  final Map<String, dynamic> res;
   @override
   Widget build(BuildContext context) {
-    return type!=''?(type=='user'?DashBoard(userData:res,):OtherScreens(data:res)):const MyApp();
+    return type != ''
+        ? (type == 'user'
+            ? DashBoard(
+                userData: res,
+              )
+            : OtherScreens(data: res))
+        : const MyApp();
   }
 }
-
-

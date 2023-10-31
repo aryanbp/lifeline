@@ -12,12 +12,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lifeline/screens/Appointments.dart';
 import 'package:lifeline/screens/profile.dart';
 import 'package:http/http.dart' as http;
+import 'package:lifeline/screens/query.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components/services.dart';
 import 'FindDoctor.dart';
+import 'FindLab.dart';
 import 'authpopup.dart';
 import 'map.dart';
+import 'medicine.dart';
 
 class DashBoard extends StatefulWidget {
   const DashBoard({super.key, required this.userData});
@@ -418,7 +421,7 @@ class _DashBoardState extends State<DashBoard> {
                             title: 'Find Doctor',
                             sub: '200+ Doctors'),
                         Box(
-                            func: () => (),
+                            func: () => Navigator.push(context,MaterialPageRoute(builder: (context) => LabSearch()),),
                             side: 'r',
                             color: const Color(0xFFFFEEE1),
                             icon: Icons.science_outlined,
@@ -431,7 +434,7 @@ class _DashBoardState extends State<DashBoard> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Box(
-                            func: () => (),
+                            func: () => Navigator.push(context,MaterialPageRoute(builder: (context) => query()),),
                             side: 'l',
                             color: const Color(0xFFEDF5EB),
                             icon: Icons.email_outlined,
@@ -439,7 +442,7 @@ class _DashBoardState extends State<DashBoard> {
                             title: 'Message',
                             sub: 'Any Query?'),
                         Box(
-                            func: () => (),
+                            func: () => Navigator.push(context,MaterialPageRoute(builder: (context) => MedicineSearch()),),
                             side: 'r',
                             color: const Color(0xFFE7F6F6),
                             icon: Icons.medication_outlined,

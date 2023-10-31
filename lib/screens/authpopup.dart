@@ -87,7 +87,9 @@ class _MyAuthPopup extends State<AuthPopup> {
       Navigator.pop(context);
       Navigator.pop(context);
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => widget.loggin?MyApp():LoadMap()));
+          context,
+          MaterialPageRoute(
+              builder: (context) => widget.loggin ? MyApp() : LoadMap()));
     });
   }
 
@@ -162,8 +164,13 @@ class _MyAuthPopup extends State<AuthPopup> {
                     splashFactory: NoSplash.splashFactory,
                   ),
                   onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp()));
+                    if (widget.loggin) {
+                      Navigator.pop(context);
+                    } else {
+                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => MyApp()));
+                    }
                   },
                   child: const Text('Cancel')),
             ],

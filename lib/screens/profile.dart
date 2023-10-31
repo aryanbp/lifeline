@@ -31,7 +31,7 @@ class _ProfileState extends State<Profile> {
     // TODO: implement initState
     super.initState();
     getPhoto();
-    Future.delayed(Duration(milliseconds: 800), () {
+    Future.delayed(Duration(milliseconds: 200), () {
       setState(() {
         _isVisible = true;
       });
@@ -55,11 +55,11 @@ class _ProfileState extends State<Profile> {
   }
 
   String api = 'http://192.168.29.13:3000/bookingCheck';
-  List<dynamic> res=[];
+  List<dynamic> res = [];
 
   Future<void> getBooking() async {
     print(widget.userData['user_id']);
-    api+='/${widget.userData['user_id']}';
+    api += '/${widget.userData['user_id']}';
     var url = Uri.parse(api);
     var response = await http.get(url);
     if (response.statusCode == 200) {
@@ -68,8 +68,7 @@ class _ProfileState extends State<Profile> {
       setState(() {
         print(res);
       });
-
-    }else{
+    } else {
       print('No');
     }
   }
@@ -128,23 +127,29 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget Button(content,icon,func){
+  Widget Button(content, icon, func) {
     return ElevatedButton(
-          onPressed: ()=>func(),
-          style: ElevatedButton.styleFrom(
-            splashFactory: NoSplash.splashFactory,
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            padding: EdgeInsets.all(16),
-          ),
-          child:Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              icon, // Prefix icon
-              Text(content,style: TextStyle(color:Colors.black,fontSize: 16),),
-              Icon(Icons.arrow_forward_ios_outlined,color:Colors.black,), // Suffix icon
-            ],
-          ) );
+        onPressed: () => func(),
+        style: ElevatedButton.styleFrom(
+          splashFactory: NoSplash.splashFactory,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          padding: EdgeInsets.all(16),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            icon, // Prefix icon
+            Text(
+              content,
+              style: TextStyle(color: Colors.black, fontSize: 16),
+            ),
+            Icon(
+              Icons.arrow_forward_ios_outlined,
+              color: Colors.black,
+            ), // Suffix icon
+          ],
+        ));
   }
 
   void getPhoto() async {
@@ -207,79 +212,231 @@ class _ProfileState extends State<Profile> {
     return showDialog(
         context: context,
         builder: (context) =>
-        const Stack(alignment: AlignmentDirectional.topEnd, children: [
-          AlertDialog(
-            title: Center(
-              child: Text(
-                'Enter Your Phone Number',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            const Stack(alignment: AlignmentDirectional.topEnd, children: [
+              AlertDialog(
+                title: Center(
+                  child: Text(
+                    'Enter Your Phone Number',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                content: SizedBox(
+                  height: 180,
+                  child: Column(
+                    children: [
+                      AuthPopup(loggin: true),
+                    ],
+                  ),
+                ),
               ),
-            ),
-            content: SizedBox(
-              height: 180,
-              child: Column(
-                children: [
-                  AuthPopup(loggin:true),
-                ],
-              ),
-            ),
-          ),
-        ]));
+            ]));
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: imageUrl==null && image==null && loggedIn?Center(child: Lottie.network('https://lottie.host/a6bef712-7968-4429-ab6c-e19cffe656ee/hgeQXhow44.json')):
-      Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            AnimatedOpacity(
-              opacity: _isVisible ? 1.0 : 0.0,
-              duration: Duration(seconds: 1),
-              curve: Curves.easeInOut,
-              child: Container(
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height*0.4,
-                decoration: BoxDecoration(
-                  color: Color(0xFFEEF1FF),
-                  borderRadius: BorderRadius.only(bottomLeft: Radius.circular(150),bottomRight: Radius.circular(150)),
-                ),
+      body: imageUrl == null && image == null && loggedIn
+          ? Center(
+              child: Lottie.network(
+                  'https://lottie.host/a6bef712-7968-4429-ab6c-e19cffe656ee/hgeQXhow44.json'))
+          : Center(
+              child: AnimatedOpacity(
+                opacity: _isVisible ? 1.0 : 0.0,
+                duration: Duration(seconds: 1),
+                curve: Curves.easeInOut,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    loggedIn && image!=null
-                        ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            elevation: 6,
-                            side: BorderSide(
-                              width: 1,
-                              color: Colors.black,
-                            ),
-                            padding: EdgeInsets.all(8),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25)),
-                          ),
-                          onPressed: () {
-                            var file = File(image!.path);
-                            if (image != null) {
-                              profileRef = storageRef
-                                  .child('user/${widget.userData['user_id']}')
-                                  .putFile(file)
-                                  .whenComplete(() {
-                                image = null;
-                                setState(() {
-                                  Navigator.push(
+                    Container(
+                      width: double.infinity,
+                      height: MediaQuery.of(context).size.height * 0.4,
+                      decoration: BoxDecoration(
+                        color: Color(0xFFEEF1FF),
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(150),
+                            bottomRight: Radius.circular(150)),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          loggedIn && image != null
+                              ? Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        elevation: 6,
+                                        side: BorderSide(
+                                          width: 1,
+                                          color: Colors.black,
+                                        ),
+                                        padding: EdgeInsets.all(8),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(25)),
+                                      ),
+                                      onPressed: () {
+                                        var file = File(image!.path);
+                                        if (image != null) {
+                                          profileRef = storageRef
+                                              .child(
+                                                  'user/${widget.userData['user_id']}')
+                                              .putFile(file)
+                                              .whenComplete(() {
+                                            image = null;
+                                            setState(() {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          MyApp()));
+                                              Fluttertoast.showToast(
+                                                  msg: 'Changes Saved',
+                                                  toastLength:
+                                                      Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.TOP,
+                                                  timeInSecForIosWeb: 1,
+                                                  backgroundColor: Colors.black,
+                                                  textColor: Colors.white,
+                                                  fontSize: 16.0);
+                                            });
+                                          });
+                                        }
+                                      },
+                                      child: Text('Save Changes',
+                                          style: TextStyle(
+                                              color: Colors.lightBlue)),
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        elevation: 6,
+                                        side: BorderSide(
+                                          width: 1,
+                                          color: Colors.black,
+                                        ),
+                                        padding: EdgeInsets.all(8),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(25)),
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          print(image?.path);
+                                          image = null;
+                                        });
+                                      },
+                                      child: Text('Undo Changes',
+                                          style: TextStyle(
+                                              color: Colors.lightBlue)),
+                                    ),
+                                  ],
+                                )
+                              : Container(),
+                          ElevatedButton(
+                              clipBehavior: Clip.antiAlias,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                padding: EdgeInsets.only(top: 20),
+                                shape: CircleBorder(),
+                              ),
+                              onPressed: () {
+                                modelBottomCam(context);
+                                setState(() {});
+                              },
+                              child: image == null && imageUrl != null
+                                  ? Image.network(
+                                      imageUrl,
+                                      width: MediaQuery.of(context).size.width *
+                                          .5,
+                                      height: 200,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : image != null
+                                      ? Image.file(
+                                          //to show image, you type like this.
+                                          File(image!.path),
+                                          fit: BoxFit.cover,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .5,
+                                          height: 200,
+                                        )
+                                      : Icon(Icons.person,
+                                          size: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .5,
+                                          color: Colors.black)),
+                          Text('${widget.userData['user_name'] ?? 'User'}',
+                              style: TextStyle(fontSize: 25)),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    loggedIn
+                        ? Column(
+                            children: [
+                              Button(
+                                  'Edit Profile',
+                                  Icon(
+                                    Icons.person,
+                                    color: Colors.black,
+                                  ),
+                                  () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => MyApp()));
+                                        builder: (context) => Report(),
+                                      ))),
+                              Button(
+                                  'Add Family Member',
+                                  Icon(
+                                    Icons.family_restroom,
+                                    color: Colors.black,
+                                  ),
+                                  ()),
+                              Button(
+                                  'Previous Bookings',
+                                  Icon(
+                                    Icons.medical_services_outlined,
+                                    color: Colors.black,
+                                  ),
+                                  () => getBooking()),
+                              Button(
+                                  'Previous Appointments',
+                                  Icon(
+                                    Icons.paste,
+                                    color: Colors.black,
+                                  ),
+                                  ()),
+                            ],
+                          )
+                        : Container(),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        elevation: 6,
+                        side: BorderSide(
+                          width: 2,
+                          color: Colors.black,
+                        ),
+                        padding: EdgeInsets.all(8),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25)),
+                      ),
+                      onPressed: () {
+                        loggedIn
+                            ? setState(() {
+                                loggedIn = !loggedIn;
+                                FirebaseAuth.instance.signOut().then((value) {
                                   Fluttertoast.showToast(
-                                      msg: 'Changes Saved',
+                                      msg: 'Logged Out Successfully',
                                       toastLength: Toast.LENGTH_SHORT,
                                       gravity: ToastGravity.TOP,
                                       timeInSecForIosWeb: 1,
@@ -287,121 +444,25 @@ class _ProfileState extends State<Profile> {
                                       textColor: Colors.white,
                                       fontSize: 16.0);
                                 });
+                                Navigator.pop(context);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => MyApp()));
+                              })
+                            : setState(() {
+                                authPopup();
                               });
-                            }
-                          },
-                          child: Text('Save Changes',
-                              style: TextStyle(color: Colors.lightBlue)),
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            elevation: 6,
-                            side: BorderSide(
-                              width: 1,
-                              color: Colors.black,
-                            ),
-                            padding: EdgeInsets.all(8),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25)),
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              print(image?.path);
-                              image = null;
-                            });
-                          },
-                          child: Text('Undo Changes',
-                              style: TextStyle(color: Colors.lightBlue)),
-                        ),
-                      ],
-                    )
-                        : Container(),
-                    ElevatedButton(
-                        clipBehavior: Clip.antiAlias,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding: EdgeInsets.only(top: 20),
-                          shape: CircleBorder(),
-                        ),
-                        onPressed: () {
-                          modelBottomCam(context);
-                          setState(() {});
-                        },
-                        child: image == null && imageUrl != null
-                            ? Image.network(
-                          imageUrl,
-                          width: MediaQuery.of(context).size.width * .5,
-                          height: 200,
-                          fit: BoxFit.cover,
-                        )
-                            : image != null
-                            ? Image.file(
-                          //to show image, you type like this.
-                          File(image!.path),
-                          fit: BoxFit.cover,
-                          width: MediaQuery.of(context).size.width * .5,
-                          height: 200,
-                        )
-                            :Icon(Icons.person,size:MediaQuery.of(context).size.width * .5 ,color:Colors.black)),
-                    Text('${widget.userData['user_name']??'User'}',style: TextStyle(fontSize: 25)),
+                      },
+                      child: Text(
+                        loggedIn ? 'LogOut' : 'LogIn',
+                        style: TextStyle(color: Colors.lightBlue),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 20,),
-            loggedIn?Column(
-              children: [
-                Button('Edit Profile',Icon(Icons.person,color:Colors.black,),()=>Navigator.push(context,MaterialPageRoute(builder: (context) => Report(),))),
-                Button('Add Family Member',Icon(Icons.family_restroom,color:Colors.black,),()),
-                Button('Previous Bookings',Icon(Icons.medical_services_outlined,color:Colors.black,),()=>getBooking()),
-                Button('Previous Appointments',Icon(Icons.paste,color:Colors.black,),()),
-              ],
-            ):Container(),
-            ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  elevation: 6,
-                  side: BorderSide(
-                    width: 2,
-                    color: Colors.black,
-                  ),
-                  padding: EdgeInsets.all(8),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25)),
-                ),
-                onPressed: () {
-                  loggedIn
-                      ? setState(() {
-                          loggedIn = !loggedIn;
-                          FirebaseAuth.instance.signOut().then((value) {
-                            Fluttertoast.showToast(
-                                msg: 'Logged Out Successfully',
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.TOP,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.black,
-                                textColor: Colors.white,
-                                fontSize: 16.0);
-                          });
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => MyApp()));
-                        })
-                      : setState(() {
-                          authPopup();
-                        });
-                },
-                child: Text(
-                  loggedIn ? 'LogOut' : 'LogIn',
-                  style: TextStyle(color: Colors.lightBlue),
-                ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
