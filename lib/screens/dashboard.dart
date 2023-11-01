@@ -18,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../components/services.dart';
 import 'FindDoctor.dart';
 import 'FindLab.dart';
+import 'accidentReport.dart';
 import 'authpopup.dart';
 import 'map.dart';
 import 'medicine.dart';
@@ -400,7 +401,7 @@ class _DashBoardState extends State<DashBoard> {
                             title: 'Ambulance',
                             sub: 'For Emergency'),
                         Box(
-                            func: () => (),
+                            func: () => Navigator.push(context,MaterialPageRoute(builder: (context) => AccidentReport()),),
                             side: 'r',
                             color: const Color(0xFF00A3FF),
                             icon: Icons.handshake_outlined,

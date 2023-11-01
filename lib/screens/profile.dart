@@ -12,6 +12,7 @@ import 'package:lifeline/screens/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:lifeline/screens/report.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends StatefulWidget {
   Profile({super.key, required this.userData});
@@ -56,6 +57,8 @@ class _ProfileState extends State<Profile> {
 
   String api = 'http://192.168.29.13:3000/bookingCheck';
   List<dynamic> res = [];
+  late SharedPreferences prefs;
+  int id=0;
 
   Future<void> getBooking() async {
     print(widget.userData['user_id']);
@@ -153,6 +156,7 @@ class _ProfileState extends State<Profile> {
   }
 
   void getPhoto() async {
+    prefs= await SharedPreferences.getInstance();
     var path = await widget.userData['user_pic'];
     final Reference ref = await storage.ref().child(path);
     imageUrl = await ref.getDownloadURL();
@@ -435,6 +439,7 @@ class _ProfileState extends State<Profile> {
                             ? setState(() {
                                 loggedIn = !loggedIn;
                                 FirebaseAuth.instance.signOut().then((value) {
+                                  prefs.remove('id');
                                   Fluttertoast.showToast(
                                       msg: 'Logged Out Successfully',
                                       toastLength: Toast.LENGTH_SHORT,
